@@ -4,6 +4,11 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\UserRole;
+use Illuminate\Support\Facades\auth;
+
 
 class AppLayout extends Component
 {
@@ -12,6 +17,14 @@ class AppLayout extends Component
      */
     public function render(): View
     {
-        return view('layouts.app');
+        if (Auth::user()->roles[0]->name == 'Admin') {
+            return view('layouts.LOadmin.app');
+        } else if (Auth::user()->roles[0]->name == 'User') {
+            return view('layouts.LOusers.app');
+        } else {
+            return view('layouts.app');
+        }
+
+
     }
 }
