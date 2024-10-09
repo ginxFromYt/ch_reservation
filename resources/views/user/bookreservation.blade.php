@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout> 
 
     <!-- Flash Messages -->
     @if (session('success'))
