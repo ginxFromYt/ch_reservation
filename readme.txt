@@ -21,6 +21,7 @@ Make sure to import this SQL file into your preferred database system (MySQL, Po
 Or
 Dirrectly import the database file.
 
+test accounts refer to the database/Seeders/Usertable.php
 
 Skills Required
 To work on or maintain this project, knowledge of the following is required:
