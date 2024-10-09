@@ -28,3 +28,7 @@ To work on or maintain this project, knowledge of the following is required:
 HTML/CSS: For frontend development and templating.
 JavaScript (JS): For dynamic interactions in the frontend.
 Laravel Eloquent: For interacting with the database using Laravel's ORM (Object-Relational Mapping).
+
+
+all of the test user refer to the user table seeder file located at database\seeders\UserTableSeeder.php plese read the code ask amster Leo for anything
+
