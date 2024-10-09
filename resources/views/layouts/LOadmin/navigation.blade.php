@@ -9,11 +9,34 @@
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
+                @php
+
+                    $pending = DB::table('reservations')
+                    ->where('status', 'pending')
+                    ->count();
+
+                    $aproved = DB::table('reservations')
+                    ->where('status', 'approved')
+                    ->count();
+
+
+                @endphp
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link href="{{route('dashboard')}}">
+                       Dashboard
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.PendingReservation')" class="relative">
+                        <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{$pending ?? ''}}</span>
+                        {{ __('Pending Reservations') }}
+                    </x-nav-link>
+
+
+                    <x-nav-link :href="route('admin.AprovedReservation')" class="relative">
+                        <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-sky-300 text-black text-xs font-bold px-2 py-1 rounded-full">{{$aproved ?? ''}}</span>
+                        {{ __('ApprovedReservations') }}
                     </x-nav-link>
                 </div>
             </div>

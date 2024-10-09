@@ -15,9 +15,26 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function viewReservation()
+    public function viewApproved()
     {
-        return view('user.myreservation');
+
+        $reservations = Reservations::where('user_id', Auth::id())
+        ->join('users', 'reservations.user_id', '=', 'users.id')
+        ->where('reservations.status', 'Approved')
+        ->get();
+        //  dd($reservations);
+        return view('user.myapprovedreservation')->with('reservations', $reservations);
+    }
+
+    public function viewPending()
+    {
+
+        $reservations = Reservations::where('user_id', Auth::id())
+        ->join('users', 'reservations.user_id', '=', 'users.id')
+        ->where('reservations.status', 'Pending')
+        ->get();
+        //  dd($reservations);
+        return view('user.mypendingreservation')->with('reservations', $reservations);
     }
 
     public function bookReservation()
@@ -31,7 +48,6 @@ class UserController extends Controller
 
     public function proceedReservation(Request $request)
     {
-        // dd($request);
         // Check if the user already has a reservation for the selected event
         $reservationExists = Reservations::where('user_id', Auth::id())
             ->where('event_id', $request->event_id)
@@ -39,6 +55,16 @@ class UserController extends Controller
 
         if ($reservationExists) {
             return redirect()->back()->with('error', 'You already have a reservation for this event.');
+        }
+
+        // Check if there is an existing reservation with the same date and time where the status is approved
+        $conflictingReservation = Reservations::where('reservation_date', $request->reservation_date)
+            ->where('reservation_time', $request->reservation_time)
+            ->where('status', 'approved')
+            ->exists();
+
+        if ($conflictingReservation) {
+            return redirect()->back()->with('error', 'There is already an approved reservation for the selected date and time.');
         }
 
         // Handle event-specific logic

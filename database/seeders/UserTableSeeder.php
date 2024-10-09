@@ -26,9 +26,16 @@ class UserTableSeeder extends Seeder
 
 
         // Create a normal user
-        $normalUser = User::create([
-            'name' => 'Test User',
+        $normalUser1 = User::create([
+            'name' => 'Test User 1',
             'email' => 'user@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => Carbon::now(),
+        ]);
+
+        $normalUser2 = User::create([
+            'name' => 'Test User 2',
+            'email' => 'user2@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => Carbon::now(),
         ]);
@@ -37,8 +44,9 @@ class UserTableSeeder extends Seeder
         $adminRole = Role::where('role', 'admin')->first();
         $userRole = Role::where('role', 'user')->first();
 
-        $adminUser->roles()->attach($adminRole);
-        $normalUser->roles()->attach($userRole);
+        // $adminUser->roles()->attach($adminRole);
+        $normalUser1->roles()->attach($userRole);
+        $normalUser2->roles()->attach($userRole);
 
 
     }

@@ -43,11 +43,24 @@ Route::middleware('auth')->group(function () {
 
 // routes for users only
 // Grouping routes under the 'user' prefix and User namespace
-Route::namespace('App\Http\Controllers\User')->prefix('user')->as('user.')->group(function () {
-        Route::get('/reservation', 'UserController@viewReservation')->name('reservation');
-        Route::get('/bookreservation', 'UserController@bookReservation')->name('bookreservation');
-        Route::post('/proceedreservation', 'UserController@proceedReservation')->name('proceedreservation');
-    });
+Route::
+        namespace('App\Http\Controllers\User')->prefix('user')->as('user.')->group(function () {
+            Route::get('/viewApproved', 'UserController@viewApproved')->name('viewApproved');
+            Route::get('/viewPending', 'UserController@viewPending')->name('viewPending');
+            Route::get('/bookreservation', 'UserController@bookReservation')->name('bookreservation');
+            Route::post('/proceedreservation', 'UserController@proceedReservation')->name('proceedreservation');
+        });
+
+
+// for admin routes
+Route::
+        namespace('App\Http\Controllers\Admin')->prefix('admin')->as('admin.')->group(function () {
+            Route::get('/AprovedReservation', 'AdminController@AprovedReservation')->name('AprovedReservation');
+            Route::get('/PendingReservation', 'AdminController@PendingReservation')->name('PendingReservation');
+            Route::get('/approve/{id}', 'AdminController@approveReservation')->name('approve');
+            Route::get('/reject/{id}', 'AdminController@rejectReservation')->name('reject');
+
+        });
 
 
 require __DIR__ . '/auth.php';
