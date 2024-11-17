@@ -273,9 +273,9 @@
                 ->toArray();
         @endphp
 
-        // Declare flatpickrInstance globally so it can be accessed anywhere
-        var flatpickrInstance;
+        let flatpickrInstance;
 
+        // Move updateDatePicker and toggleBaptismForm outside DOMContentLoaded
         function updateDatePicker() {
             const eventSelect = document.getElementById('event');
             const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
@@ -304,21 +304,49 @@
             flatpickrInstance = flatpickr("#reservation_date", config);
         }
 
+        // Move toggleBaptismForm outside DOMContentLoaded
+        function toggleBaptismForm() {
+            const eventSelect = document.getElementById('event');
+            const baptismForm = document.getElementById('baptismForm');
+            const weddingForm = document.getElementById('weddingForm');
+            const burialForm = document.getElementById('burialForm');
+            const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
+
+            function toggleRequiredFields(form, isRequired) {
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (isRequired) {
+                        input.setAttribute('required', 'required');
+                    } else {
+                        input.removeAttribute('required');
+                    }
+                });
+            }
+
+            baptismForm.style.display = selectedEvent === "Baptism" ? "block" : "none";
+            toggleRequiredFields(baptismForm, selectedEvent === "Baptism");
+
+            weddingForm.style.display = selectedEvent === "Wedding Ceremony" ? "block" : "none";
+            toggleRequiredFields(weddingForm, selectedEvent === "Wedding Ceremony");
+
+            burialForm.style.display = selectedEvent === "Burial Mass" ? "block" : "none";
+            toggleRequiredFields(burialForm, selectedEvent === "Burial Mass");
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const reservedDatesTime = @json($reservedDatesTime);
 
             // Initialize the calendar
             flatpickr("#calendar", {
-                inline: true, // Keep the calendar always visible
+                inline: true,
                 dateFormat: "Y-m-d",
                 defaultDate: "today",
                 minDate: "today",
                 disable: [
-                    date => date.getDay() === 0 || date.getDay() ===
-                    1 // Disable Sundays (0) and Mondays (1)
+                    date => date.getDay() === 0 || date.getDay() === 1
                 ],
                 locale: {
-                    firstDayOfWeek: 1 // Optional: Start the calendar with Monday
+                    firstDayOfWeek: 1
                 },
                 onDayCreate: (dObj, dStr, fp, dayElem) => {
                     const dateStr = dayElem.dateObj.toISOString().split('T')[0];
@@ -328,11 +356,11 @@
 
                     if (dayElem.dateObj.getDay() === 0 || dayElem.dateObj.getDay() === 1) {
                         dayElem.style.backgroundColor = '#d946ef';
-                        dayElem.style.color = '#000000'; // Set text color to black
+                        dayElem.style.color = '#000000';
                     }
 
                     if (reservedTimes.length > 0) {
-                        dayElem.style.backgroundColor = '#90ee90'; // Light green
+                        dayElem.style.backgroundColor = '#90ee90';
                         dayElem.dataset.reservedTimes = JSON.stringify(reservedTimes);
                         dayElem.title = 'Reserved times: ' + reservedTimes.join(', ');
                     }
@@ -359,20 +387,18 @@
                 clickOpens: false
             });
 
-            // CSS to disable clicking but keep hover and tooltip active
             const style = document.createElement('style');
             style.innerHTML = `
                 .click-disabled {
-                    pointer-events: auto; /* Keep hover events enabled */
-                    cursor: default; /* Change cursor to default for disabled clicks */
+                    pointer-events: auto;
+                    cursor: default;
                 }
                 .click-disabled:active {
-                    pointer-events: none; /* Disable click on active state */
+                    pointer-events: none;
                 }
             `;
             document.head.appendChild(style);
 
-            // Control the time selection
             flatpickr("#reservation_time", {
                 enableTime: true,
                 noCalendar: true,
@@ -386,7 +412,6 @@
                 }
             });
 
-            // Initialize date picker for reservation_date
             flatpickrInstance = flatpickr("#reservation_date", {
                 dateFormat: "Y-m-d",
                 minDate: "today",
@@ -397,34 +422,6 @@
                     firstDayOfWeek: 1
                 }
             });
-
-            function toggleBaptismForm() {
-                const eventSelect = document.getElementById('event');
-                const baptismForm = document.getElementById('baptismForm');
-                const weddingForm = document.getElementById('weddingForm');
-                const burialForm = document.getElementById('burialForm');
-                const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
-
-                function toggleRequiredFields(form, isRequired) {
-                    const inputs = form.querySelectorAll('input, select, textarea');
-                    inputs.forEach(input => {
-                        if (isRequired) {
-                            input.setAttribute('required', 'required');
-                        } else {
-                            input.removeAttribute('required');
-                        }
-                    });
-                }
-
-                baptismForm.style.display = selectedEvent === "Baptism" ? "block" : "none";
-                toggleRequiredFields(baptismForm, selectedEvent === "Baptism");
-
-                weddingForm.style.display = selectedEvent === "Wedding Ceremony" ? "block" : "none";
-                toggleRequiredFields(weddingForm, selectedEvent === "Wedding Ceremony");
-
-                burialForm.style.display = selectedEvent === "Burial Mass" ? "block" : "none";
-                toggleRequiredFields(burialForm, selectedEvent === "Burial Mass");
-            }
         });
     </script>
 </x-app-layout>

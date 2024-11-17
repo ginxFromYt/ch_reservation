@@ -25,9 +25,10 @@
         $reservations = DB::table('reservations')
             ->where('status', 'approved')
             ->get()
-            ->groupBy(function($date) {
-            return Carbon::parse($date->reservation_date)->format('Y-m-d');
+            ->groupBy(function ($date) {
+                return Carbon::parse($date->reservation_date)->format('Y-m-d');
             });
+            // dd($reservations);
 
     @endphp
 
@@ -43,7 +44,7 @@
 
             <!-- Forward Button -->
             <a href="{{ route(request()->route()->getName(), ['month' => $nextMonth]) }}"
-               class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
                 Forward &rarr;
             </a>
         </div>
@@ -76,21 +77,30 @@
                         <tr>
                             @for ($j = 0; $j < 7; $j++)
                                 @php
-                                    $currentDate = $month->copy()->day($day); // Get the current date object
+                                    $currentDate = $month->copy()->day($day)->format('Y-m-d'); // Format date for comparison
                                 @endphp
 
                                 @if (($i === 0 && $j < $startOfMonth) || $day > $daysInMonth)
                                     <td class="border border-gray-300 px-2 py-3 text-center"></td>
                                 @else
-                                    <td class="border border-gray-300 px-2 py-3 text-center">
-                                        @if ($currentDate->lt($today) || $currentDate->isSunday() || $currentDate->isMonday())
-                                            <button class="cursor-not-allowed"
-                                                    title="This date is not clickable">
+                                    @php
+                                       $hasReservation = isset($reservations[$currentDate]); // Check if reservation exists
+                                    @endphp
+
+                                    <td
+                                        class="border border-gray-300 px-2 py-3 text-center {{ $hasReservation ? 'bg-green-200' : '' }}"
+                                        @if ($hasReservation)
+                                            title="Has reservations on {{ $currentDate }}"
+                                        @endif>
+                                        @if (
+                                            $month->copy()->day($day)->lt($today) ||
+                                                $month->copy()->day($day)->isSunday() ||
+                                                $month->copy()->day($day)->isMonday())
+                                            <button class="cursor-not-allowed" title="This date is reserved or disabled">
                                                 {{ $day }}
                                             </button>
                                         @else
-                                            <a href=""
-                                               class="text-blue-500 hover:underline">
+                                            <a href="" class="text-blue-500 hover:underline">
                                                 {{ $day }}
                                             </a>
                                         @endif
