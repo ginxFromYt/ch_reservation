@@ -19,8 +19,12 @@
         $daysInMonth = $month->daysInMonth;
         $startOfMonth = ($month->startOfMonth()->dayOfWeek + 6) % 7; // Shift Sunday (0) to last day
 
-        // Generate next month for navigation.
+        // Generate next and previous months for navigation.
         $nextMonth = $month->copy()->addMonth()->format('Y-m');
+        $prevMonth = $month->copy()->subMonth()->format('Y-m');
+
+        // Check if the previous month would go before the current month.
+        $canNavigateBack = !$month->eq(Carbon::now()->startOfMonth());
 
         $reservations = DB::table('reservations')
             ->where('status', 'approved')
@@ -28,16 +32,27 @@
             ->groupBy(function ($date) {
                 return Carbon::parse($date->reservation_date)->format('Y-m-d');
             });
-            // dd($reservations);
-
     @endphp
 
     <div class="container mx-auto p-6">
+        <!-- Event Calendar Heading -->
+        <div class="mb-6 text-center">
+            <h1 class="text-4xl font-bold text-gray-800">Event Calendar</h1>
+            <p class="text-gray-600">View events for the selected month.</p>
+        </div>
+
         <div class="flex flex-col md:flex-row justify-between items-center mb-4">
-            <!-- Back Button (Disabled) -->
-            <button class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded cursor-not-allowed" disabled>
-                &larr; Back
-            </button>
+            <!-- Back Button -->
+            @if ($canNavigateBack)
+                <a href="{{ route(request()->route()->getName(), ['month' => $prevMonth]) }}"
+                    class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                    &larr; Back
+                </a>
+            @else
+                <button class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded cursor-not-allowed">
+                    &larr; Back
+                </button>
+            @endif
 
             <!-- Current Month Name -->
             <div class="text-2xl font-bold text-center">{{ $currentMonth }}</div>
@@ -84,19 +99,17 @@
                                     <td class="border border-gray-300 px-2 py-3 text-center"></td>
                                 @else
                                     @php
-                                       $hasReservation = isset($reservations[$currentDate]); // Check if reservation exists
+                                        $hasReservation = isset($reservations[$currentDate]); // Check if reservation exists
                                     @endphp
 
-                                    <td
-                                        class="border border-gray-300 px-2 py-3 text-center {{ $hasReservation ? 'bg-green-200' : '' }}"
-                                        @if ($hasReservation)
-                                            title="Has reservations on {{ $currentDate }}"
-                                        @endif>
+                                    <td class="border border-gray-300 px-2 py-3 text-center {{ $hasReservation ? 'bg-green-200' : '' }}"
+                                        @if ($hasReservation) title="Has reservations on {{ $currentDate }}" @endif>
                                         @if (
                                             $month->copy()->day($day)->lt($today) ||
                                                 $month->copy()->day($day)->isSunday() ||
                                                 $month->copy()->day($day)->isMonday())
-                                            <button class="cursor-not-allowed" title="This date is reserved or disabled">
+                                            <button class="cursor-not-allowed"
+                                                title="This date is reserved or disabled">
                                                 {{ $day }}
                                             </button>
                                         @else
