@@ -238,7 +238,8 @@
                 <div class="text-start p-5">
 
                     <p class="text-sm text-gray-600 mt-2 font-extrabold">
-                       Note: Dates on <span class="text-fuchsia-500 font-bold">Mondays and Sundays</span> are disabled because they
+                        Note: Dates on <span class="text-fuchsia-500 font-bold">Mondays and Sundays</span> are disabled
+                        because they
                         are reserved for Regular Mass Schedules.
                     </p>
                     <p class="text-sm text-gray-600 mt-2">
@@ -248,7 +249,8 @@
                         <span class="text-green-500">**Days marked in green have vacant reservation times.**</span>
                     </p>
                     <p class="text-sm text-gray-600 mt-2 font-extrabold">
-                        Also Note: You might pick a valid date and time but the acceptance of the reservaation may be based on the priests discression.
+                        Also Note: You might pick a valid date and time but the acceptance of the reservaation may be
+                        based on the priests discression.
                     </p>
                 </div>
                 <div id="calendar" class="mx-auto"></div>
@@ -271,88 +273,132 @@
                 ->toArray();
         @endphp
 
+        let flatpickrInstance;
+
+        // Move updateDatePicker and toggleBaptismForm outside DOMContentLoaded
+        function updateDatePicker() {
+            const eventSelect = document.getElementById('event');
+            const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
+
+            let config = {
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                disable: [
+                    date => date.getDay() === 0 || date.getDay() === 1
+                ],
+                locale: {
+                    firstDayOfWeek: 1
+                }
+            };
+
+            if (selectedEvent === "Burial Mass") {
+                config.disable = [
+                    date => date.getDay() !== 6
+                ];
+            }
+
+            if (flatpickrInstance) {
+                flatpickrInstance.destroy();
+            }
+
+            flatpickrInstance = flatpickr("#reservation_date", config);
+        }
+
+        // Move toggleBaptismForm outside DOMContentLoaded
+        function toggleBaptismForm() {
+            const eventSelect = document.getElementById('event');
+            const baptismForm = document.getElementById('baptismForm');
+            const weddingForm = document.getElementById('weddingForm');
+            const burialForm = document.getElementById('burialForm');
+            const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
+
+            function toggleRequiredFields(form, isRequired) {
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (isRequired) {
+                        input.setAttribute('required', 'required');
+                    } else {
+                        input.removeAttribute('required');
+                    }
+                });
+            }
+
+            baptismForm.style.display = selectedEvent === "Baptism" ? "block" : "none";
+            toggleRequiredFields(baptismForm, selectedEvent === "Baptism");
+
+            weddingForm.style.display = selectedEvent === "Wedding Ceremony" ? "block" : "none";
+            toggleRequiredFields(weddingForm, selectedEvent === "Wedding Ceremony");
+
+            burialForm.style.display = selectedEvent === "Burial Mass" ? "block" : "none";
+            toggleRequiredFields(burialForm, selectedEvent === "Burial Mass");
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const reservedDatesTime = @json($reservedDatesTime);
 
             // Initialize the calendar
             flatpickr("#calendar", {
-                inline: true, // Keep the calendar always visible
+                inline: true,
                 dateFormat: "Y-m-d",
                 defaultDate: "today",
                 minDate: "today",
                 disable: [
-                    date => date.getDay() === 0 || date.getDay() ===
-                    1 // Disable Sundays (0) and Mondays (1)
+                    date => date.getDay() === 0 || date.getDay() === 1
                 ],
                 locale: {
-                    firstDayOfWeek: 1 // Optional: Start the calendar with Monday
+                    firstDayOfWeek: 1
                 },
                 onDayCreate: (dObj, dStr, fp, dayElem) => {
-                    // Convert the date element to a string format
                     const dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                    // Get reserved times for the current date element
                     const reservedTimes = reservedDatesTime.filter(reservation => reservation.date ===
-                        dateStr).map(reservation => reservation.time);
+                            dateStr)
+                        .map(reservation => reservation.time);
 
-                    // Mark Sundays and Mondays with a gray background and black text
                     if (dayElem.dateObj.getDay() === 0 || dayElem.dateObj.getDay() === 1) {
                         dayElem.style.backgroundColor = '#d946ef';
-                        dayElem.style.color = '#000000'; // Set text color to black
+                        dayElem.style.color = '#000000';
                     }
 
-                    // Highlight dates with approved reservations with a light green background
                     if (reservedTimes.length > 0) {
-                        dayElem.style.backgroundColor = '#90ee90'; // Light green
-                        dayElem.dataset.reservedTimes = JSON.stringify(
-                            reservedTimes); // Store reserved times in the element
-                        dayElem.title = 'Reserved times: ' + reservedTimes.join(
-                            ', '); // Show tooltip with reserved times
+                        dayElem.style.backgroundColor = '#90ee90';
+                        dayElem.dataset.reservedTimes = JSON.stringify(reservedTimes);
+                        dayElem.title = 'Reserved times: ' + reservedTimes.join(', ');
                     }
 
-                    // Prevent clicking but keep hover functionality intact
                     dayElem.classList.add('click-disabled');
                 },
                 onDayHover: (date, dayElem) => {
-                    // Keep hover interaction active and show tooltip if there are reserved times
                     if (dayElem.dataset.reservedTimes) {
-                        dayElem.style.cursor =
-                            'pointer'; // Show pointer cursor to indicate there’s info
+                        dayElem.style.cursor = 'pointer';
                     } else {
-                        dayElem.style.cursor = 'not-allowed'; // Show not-allowed cursor for other dates
+                        dayElem.style.cursor = 'not-allowed';
                     }
                 },
                 onChange: (selectedDates, dateStr, instance) => {
-                    // Prevent date selection by immediately deselecting the date
                     instance.clear();
                 },
                 onDayClick: (date, dayElem, instance) => {
-                    // Prevent date selection and show a message instead
-                    instance.clear(); // Clear any selected date
+                    instance.clear();
                     alert('Date selection is disabled. Please select a date from the form.');
                 },
                 onClose: (selectedDates, dateStr, instance) => {
-                    // Re-open the calendar if it gets closed
                     instance.open();
                 },
-                clickOpens: false // Completely disable date picking functionality
+                clickOpens: false
             });
 
-            // CSS to disable clicking but keep hover and tooltip active
             const style = document.createElement('style');
             style.innerHTML = `
-                    .click-disabled {
-                        pointer-events: auto; /* Keep hover events enabled */
-                        cursor: default; /* Change cursor to default for disabled clicks */
-                    }
-                    .click-disabled:active {
-                        pointer-events: none; /* Disable click on active state */
-                    }
-                `;
+                .click-disabled {
+                    pointer-events: auto;
+                    cursor: default;
+                }
+                .click-disabled:active {
+                    pointer-events: none;
+                }
+            `;
             document.head.appendChild(style);
 
-            document.head.appendChild(style);
-
-            // Control the time selection
             flatpickr("#reservation_time", {
                 enableTime: true,
                 noCalendar: true,
@@ -366,36 +412,6 @@
                 }
             });
 
-            let flatpickrInstance;
-
-            function updateDatePicker() {
-                const eventSelect = document.getElementById('event');
-                const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
-
-                let config = {
-                    dateFormat: "Y-m-d",
-                    minDate: "today",
-                    disable: [
-                        date => date.getDay() === 0 || date.getDay() === 1
-                    ],
-                    locale: {
-                        firstDayOfWeek: 1
-                    }
-                };
-
-                if (selectedEvent === "Burial Mass") {
-                    config.disable = [
-                        date => date.getDay() !== 6
-                    ];
-                }
-
-                if (flatpickrInstance) {
-                    flatpickrInstance.destroy();
-                }
-
-                flatpickrInstance = flatpickr("#reservation_date", config);
-            }
-
             flatpickrInstance = flatpickr("#reservation_date", {
                 dateFormat: "Y-m-d",
                 minDate: "today",
@@ -406,34 +422,6 @@
                     firstDayOfWeek: 1
                 }
             });
-
-            function toggleBaptismForm() {
-                const eventSelect = document.getElementById('event');
-                const baptismForm = document.getElementById('baptismForm');
-                const weddingForm = document.getElementById('weddingForm');
-                const burialForm = document.getElementById('burialForm');
-                const selectedEvent = eventSelect.options[eventSelect.selectedIndex].text;
-
-                function toggleRequiredFields(form, isRequired) {
-                    const inputs = form.querySelectorAll('input, select, textarea');
-                    inputs.forEach(input => {
-                        if (isRequired) {
-                            input.setAttribute('required', 'required');
-                        } else {
-                            input.removeAttribute('required');
-                        }
-                    });
-                }
-
-                baptismForm.style.display = selectedEvent === "Baptism" ? "block" : "none";
-                toggleRequiredFields(baptismForm, selectedEvent === "Baptism");
-
-                weddingForm.style.display = selectedEvent === "Wedding Ceremony" ? "block" : "none";
-                toggleRequiredFields(weddingForm, selectedEvent === "Wedding Ceremony");
-
-                burialForm.style.display = selectedEvent === "Burial Mass" ? "block" : "none";
-                toggleRequiredFields(burialForm, selectedEvent === "Burial Mass");
-            }
         });
     </script>
 </x-app-layout>

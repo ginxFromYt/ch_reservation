@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Role;
 use App\Models\RoleUser;
+use Carbon\Carbon;
 
 use App\Http\Controllers\testcont;
 use PHPUnit\Event\Code\Test;
@@ -24,6 +25,8 @@ Route::get('/dashboard', function () {
     if (Auth::user()->roles[0]->name == "Admin") {
         return view('admin.dashboard');
     } else if (Auth::user()->roles[0]->name == "User") {
+
+
         return view('user.dashboard');
     } else {
         return view('dashboard');
