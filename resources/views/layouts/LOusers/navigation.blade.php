@@ -84,11 +84,14 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('dashboard')">
+            <x-responsive-nav-link href="{{route('user.viewApproved')}}">
                 Active Reservations
             </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{route('user.viewPending')}}">
+                Pending Reservations
+            </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('dashboard')">
+            <x-responsive-nav-link href="{{route('user.bookreservation')}}">
                 Book Reservation
             </x-responsive-nav-link>
         </div>
