@@ -113,7 +113,7 @@
                                                 {{ $day }}
                                             </button>
                                         @else
-                                            <a href="" class="text-blue-500 hover:underline">
+                                            <a href="{{route('user.bookreservation')}}" class="text-blue-500 hover:underline">
                                                 {{ $day }}
                                             </a>
                                         @endif
