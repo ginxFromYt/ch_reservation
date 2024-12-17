@@ -52,6 +52,7 @@ Route::
             Route::get('/viewPending', 'UserController@viewPending')->name('viewPending');
             Route::get('/bookreservation', 'UserController@bookReservation')->name('bookreservation');
             Route::post('/proceedreservation', 'UserController@proceedReservation')->name('proceedreservation');
+            Route::get('/fetchreservation', 'UserController@fetch')->name('fetchreservation');
         });
 
 
@@ -62,6 +63,8 @@ Route::
             Route::get('/PendingReservation', 'AdminController@PendingReservation')->name('PendingReservation');
             Route::get('/approve/{id}', 'AdminController@approveReservation')->name('approve');
             Route::get('/reject/{id}', 'AdminController@rejectReservation')->name('reject');
+            Route::get('/view-pending-details/{id}', 'AdminController@ViewPendingDetails')->name('ViewPendingDetails');
+
 
         });
 

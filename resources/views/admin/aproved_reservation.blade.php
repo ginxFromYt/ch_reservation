@@ -11,9 +11,9 @@
                                 <th class="py-2 px-4 border-b">Customer Email</th>
                                 <th class="py-2 px-4 border-b">Reservation Date</th>
                                 <th class="py-2 px-4 border-b">Reservation Time</th>
-                                <th class="py-2 px-4 border-b">Number of People</th>
+                                {{-- <th class="py-2 px-4 border-b">Number of People</th> --}}
                                 <th class="py-2 px-4 border-b">Status</th>
-                                <th class="py-2 px-4 border-b">Action</th>
+                                {{-- <th class="py-2 px-4 border-b">Action</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -29,7 +29,7 @@
                                     <td class="py-2 px-4 border-b">{{ $reservation->user_email }}</td>
                                     <td class="py-2 px-4 border-b">{{ $reservation->reservation_date }}</td>
                                     <td class="py-2 px-4 border-b">{{ $reservation->reservation_time }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $reservation->number_of_people }}</td>
+                                    {{-- <td class="py-2 px-4 border-b">{{ $reservation->number_of_people }}</td> --}}
                                     <td class="py-2 px-4 border-b">
                                         @if ($reservation->status == 'pending')
                                             <span class="inline-block px-2 py-1 text-xs font-bold text-yellow-800 bg-yellow-200 rounded-full">{{ $reservation->status }}</span>
@@ -52,10 +52,10 @@
                                                     </select>
                                                 </div>
                                             @else
-                                                <a href="{{ route('admin.approve', $reservation->id) }}"
-                                                    class="inline-block px-3 py-2 text-white bg-blue-500 rounded hover:bg-blue-700">Approve</a>
-                                                <a href="{{ route('admin.reject', $reservation->id) }}"
-                                                    class="inline-block px-3 py-2 text-white bg-red-500 rounded hover:bg-red-700">Reject</a>
+                                                {{-- <a href="{{ route('admin.approve', $reservation->id) }}"
+                                                    class="inline-block px-3 py-2 text-white bg-blue-500 rounded hover:bg-blue-700">Approve</a> --}}
+                                                {{-- <a href="{{ route('admin.reject', $reservation->id) }}"
+                                                    class="inline-block px-3 py-2 text-white bg-red-500 rounded hover:bg-red-700">Reject</a> --}}
                                             @endif
                                         </div>
                                     </td>
