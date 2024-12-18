@@ -34,21 +34,26 @@ class UpdateReservationStatus extends Command
     {
         $currentDateTime = Carbon::now();
 
-        // Get all reservations
         $reservations = Reservations::where('status', 'pending')
+            ->orWhere('status', 'approved')
             ->get();
 
         foreach ($reservations as $reservation) {
             // Combine reservation date and time into a Carbon instance
-            $reservationDateTime = Carbon::createFromFormat('Y-m-d h:i A', $reservation->reservation_date . ' ' . $reservation->reservation_time);
+            $reservationDateTime = Carbon::createFromFormat(
+                'Y-m-d h:i A',
+                $reservation->reservation_date . ' ' . $reservation->reservation_time
+            );
 
-            // If the reservation is in the past, set it to 'lapsed'
+            // Check if the reservation is in the past
             if ($reservationDateTime->isBefore($currentDateTime)) {
-                $reservation->status = 'lapsed';
+                // Set status to 'lapsed' if it is in the past
+                $reservation->status = 'lapsed/finished';
                 $reservation->save();
             }
-            // You can also add conditions to set the status to 'finished' if desired
-            // For example, if you have a time window after the reservation, you can set it to finished after that time
+
+            // Optionally, add conditions for 'finished' status here
+            // For example, after a specific time window has passed
         }
 
         $this->info('Reservation statuses updated!');

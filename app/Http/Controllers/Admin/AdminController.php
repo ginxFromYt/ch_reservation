@@ -57,6 +57,23 @@ class AdminController extends Controller
         return view("admin.aproved_reservation")->with('reservations', $reservations);
     }
 
+    public function LapsedReservation()
+    {
+
+        $reservations = Reservations::where('status', 'lapsed/finished')
+            ->join('users', 'reservations.user_id', '=', 'users.id')
+            ->join('events', 'reservations.event_id', '=', 'events.id')
+            ->select(
+                'reservations.*',
+                'users.name as user_name',
+                'users.email as user_email',
+                'events.name as event_name'
+            )
+            ->get();
+
+        return view("admin.lapsed_reservation")->with('reservations', $reservations);
+    }
+
     /**
      * Approve a reservation
      */

@@ -55,7 +55,7 @@
                     <label for="reservation_date" class="block text-sm font-medium text-gray-700">Select Date</label>
                     <input type="text" id="reservation_date" name="reservation_date"
                         class="flatpickr mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                        disabled required>
                 </div>
 
                 <!-- Time -->
@@ -66,10 +66,11 @@
                     </label>
                     <select id="reservation_time" name="reservation_time"
                         class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                        disabled required>
                         <!-- Options will be dynamically populated -->
                     </select>
                 </div>
+
 
                 <!-- Number of Attendees -->
                 {{-- <div>
@@ -765,10 +766,21 @@
             // Event listeners for modal and form toggling for the info calendar
             const eventSelect = document.getElementById("event");
             const dateInput = document.getElementById("reservation_date");
+            const timeSelect = document.getElementById("reservation_time");
 
             if (eventSelect) {
                 eventSelect.addEventListener("change", function() {
-                    const selectedEvent = eventSelect.options[eventSelect.selectedIndex]?.text || "default";
+                    const selectedEvent = eventSelect.options[eventSelect.selectedIndex]?.text || "";
+
+                    if (selectedEvent) {
+                        console.log("toggle the fields");
+                        dateInput.disabled = false;
+                        timeSelect.disabled = false;
+                    } else {
+                        dateInput.disabled = true;
+                        timeSelect.disabled = true;
+                    }
+
                     showEventRulesModal(selectedEvent);
                     toggleForms();
                 });

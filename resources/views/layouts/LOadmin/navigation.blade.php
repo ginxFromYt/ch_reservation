@@ -19,6 +19,10 @@
                     ->where('status', 'approved')
                     ->count();
 
+                    $lapsed = DB::table('reservations')
+                    ->where('status', 'lapsed/finished')
+                    ->count();
+
 
                 @endphp
 
@@ -29,7 +33,7 @@
                     </x-nav-link>
 
                     <x-nav-link :href="route('admin.PendingReservation')" class="relative">
-                        <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{$pending ?? ''}}</span>
+                        <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-yellow-300 text-white text-xs font-bold px-2 py-1 rounded-full">{{$pending ?? ''}}</span>
                         {{ __('Pending Reservations') }}
                     </x-nav-link>
 
@@ -37,6 +41,11 @@
                     <x-nav-link :href="route('admin.AprovedReservation')" class="relative">
                         <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-sky-300 text-black text-xs font-bold px-2 py-1 rounded-full">{{$aproved ?? ''}}</span>
                         {{ __('ApprovedReservations') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('admin.LapsedReservation')" class="relative">
+                        <span class="absolute top-1 right-0 transform translate-x-3/16 -translate-y-3/16 bg-red-500 text-black text-xs font-bold px-2 py-1 rounded-full">{{$lapsed ?? ''}}</span>
+                        {{ __('Lapsed Reservations') }}
                     </x-nav-link>
                 </div>
             </div>
