@@ -775,6 +775,7 @@
                     if (selectedEvent) {
                         console.log("toggle the fields");
                         dateInput.disabled = false;
+                        updateTimePicker();
                         timeSelect.disabled = false;
                     } else {
                         dateInput.disabled = true;
