@@ -13,6 +13,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <link href="{{ mix('dist/styles.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ asset('CR.png') }}" type="image/png">
+
 
     <!-- Include Flatpickr and Custom Script -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

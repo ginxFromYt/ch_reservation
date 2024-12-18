@@ -33,41 +33,44 @@
                 return Carbon::parse($date->reservation_date)->format('Y-m-d');
             });
     @endphp
-
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <!-- Event Calendar Heading -->
         <div class="mb-6 text-center">
-            <h1 class="text-4xl font-bold text-gray-800">Event Calendar</h1>
-            <p class="text-gray-600">View events for the selected month.</p>
+            <h1 class="text-2xl sm:text-4xl font-bold text-gray-800">Event Calendar</h1>
+            <p class="text-gray-700 text-sm leading-relaxed">
+                <span class="font-semibold text-red-500">Red</span> - Fully booked,
+                <span class="font-semibold text-green-500">Green</span> - Has reservations with Available slots.
+            </p>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        <!-- Navigation -->
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
             <!-- Back Button -->
             @if ($canNavigateBack)
                 <a href="{{ route(request()->route()->getName(), ['month' => $prevMonth]) }}"
-                    class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 text-sm sm:text-base">
                     &larr; Back
                 </a>
             @else
-                <button class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded cursor-not-allowed">
+                <button class="px-4 py-2 bg-gray-300 rounded cursor-not-allowed text-sm sm:text-base">
                     &larr; Back
                 </button>
             @endif
 
             <!-- Current Month Name -->
-            <div class="text-2xl font-bold text-center">{{ $currentMonth }}</div>
+            <div class="text-lg sm:text-2xl font-bold text-center">{{ $currentMonth }}</div>
 
             <!-- Forward Button -->
             <a href="{{ route(request()->route()->getName(), ['month' => $nextMonth]) }}"
-                class="mb-2 md:mb-0 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 text-sm sm:text-base">
                 Forward &rarr;
             </a>
         </div>
 
         <!-- Calendar Table -->
         <div class="overflow-x-auto">
-            <table class="table-auto w-full border-collapse border border-gray-300">
-                <!-- Header: Days of the Week (Starting from Monday) -->
+            <table class="table-auto w-full border-collapse border border-gray-300 text-sm sm:text-base">
+                <!-- Header: Days of the Week -->
                 <thead>
                     <tr>
                         <th class="border border-gray-300 px-2 py-1 bg-gray-200">Mon</th>
@@ -80,7 +83,7 @@
                     </tr>
                 </thead>
 
-                <!-- Calendar Body: Dates -->
+                <!-- Calendar Body -->
                 <tbody>
                     @php
                         $day = 1;
@@ -92,14 +95,14 @@
                         <tr>
                             @for ($j = 0; $j < 7; $j++)
                                 @php
-                                    $currentDate = $month->copy()->day($day)->format('Y-m-d'); // Format date for comparison
+                                    $currentDate = $month->copy()->day($day)->format('Y-m-d');
                                 @endphp
 
                                 @if (($i === 0 && $j < $startOfMonth) || $day > $daysInMonth)
                                     <td class="border border-gray-300 px-2 py-3 text-center"></td>
                                 @else
                                     @php
-                                        $hasReservation = isset($reservations[$currentDate]); // Check if reservation exists
+                                        $hasReservation = isset($reservations[$currentDate]);
                                     @endphp
 
                                     <td class="border border-gray-300 px-2 py-3 text-center {{ $hasReservation ? 'bg-green-200' : '' }}"
@@ -108,12 +111,13 @@
                                             $month->copy()->day($day)->lt($today) ||
                                                 $month->copy()->day($day)->isSunday() ||
                                                 $month->copy()->day($day)->isMonday())
-                                            <button class="cursor-not-allowed"
+                                            <button class="cursor-not-allowed text-xs sm:text-sm"
                                                 title="This date is reserved or disabled">
                                                 {{ $day }}
                                             </button>
                                         @else
-                                            <a href="{{route('user.bookreservation')}}" class="text-blue-500 hover:underline">
+                                            <a href="{{ route('user.bookreservation') }}"
+                                                class="text-blue-500 hover:underline text-xs sm:text-sm">
                                                 {{ $day }}
                                             </a>
                                         @endif
