@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 23, 2024 at 07:36 AM
+-- Generation Time: Jan 11, 2025 at 06:50 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ch_reservattion`
+-- Database: `ch_resv2`
 --
 
 -- --------------------------------------------------------
@@ -34,22 +34,23 @@ CREATE TABLE `baptism_details` (
   `reservation_id` varchar(225) DEFAULT NULL,
   `child_name` varchar(255) DEFAULT NULL,
   `child_bday` varchar(225) DEFAULT NULL,
+  `child_birthcert` varchar(225) DEFAULT NULL,
+  `child_birthplace` varchar(225) DEFAULT NULL,
   `mother_name` varchar(255) DEFAULT NULL,
   `mother_bday` varchar(225) DEFAULT NULL,
+  `mother_birthplace` varchar(225) DEFAULT NULL,
+  `mother_religion` varchar(225) DEFAULT NULL,
   `father_name` varchar(255) DEFAULT NULL,
   `father_bday` varchar(225) DEFAULT NULL,
+  `father_birthplace` varchar(225) DEFAULT NULL,
+  `father_religion` varchar(225) DEFAULT NULL,
+  `address` varchar(225) DEFAULT NULL,
+  `contact_number` varchar(225) DEFAULT NULL,
   `sponsor_female` varchar(255) DEFAULT NULL,
   `sponsor_male` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `baptism_details`
---
-
-INSERT INTO `baptism_details` (`id`, `user_id`, `event_id`, `reservation_id`, `child_name`, `child_bday`, `mother_name`, `mother_bday`, `father_name`, `father_bday`, `sponsor_female`, `sponsor_male`, `created_at`, `updated_at`) VALUES
-(1, '2', '3', '2', 'test', '2024-12-12', 'test', '2024-12-12', 'test', '1996-12-12', 'Alice Guo', 'Apollo Quiboloy', '2024-09-21 01:17:10', '2024-09-21 01:17:10');
 
 -- --------------------------------------------------------
 
@@ -62,15 +63,24 @@ CREATE TABLE `burial_details` (
   `user_id` varchar(255) DEFAULT NULL,
   `event_id` varchar(255) DEFAULT NULL,
   `reservation_id` varchar(255) DEFAULT NULL,
-  `name_deceased` varchar(255) DEFAULT NULL,
-  `date_death` varchar(255) DEFAULT NULL,
-  `time_death` varchar(255) DEFAULT NULL,
+  `name_deceased` varchar(255) NOT NULL,
+  `date_birth` varchar(255) DEFAULT NULL,
+  `age` varchar(255) DEFAULT NULL,
+  `civil_status` varchar(50) DEFAULT NULL,
+  `cause_of_death` varchar(255) DEFAULT NULL,
+  `place_of_burial` varchar(255) DEFAULT NULL,
+  `date_burial` varchar(225) DEFAULT NULL COMMENT 'must be date of reservation\r\n',
+  `time_burial` varchar(225) DEFAULT NULL,
+  `date_death` varchar(225) DEFAULT NULL,
+  `time_death` varchar(225) DEFAULT NULL,
+  `cert_death` varchar(225) DEFAULT NULL,
   `contact_person` varchar(255) DEFAULT NULL,
   `relationship` varchar(255) DEFAULT NULL,
-  `contact_number` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `contact_number` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -84,6 +94,32 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('0ade7c2cf97f75d009975f4d720d1fa6c19f4897', 'i:1;', 1734576948),
+('0ade7c2cf97f75d009975f4d720d1fa6c19f4897:timer', 'i:1734576948;', 1734576948),
+('1b6453892473a467d07372d45eb05abc2031647a', 'i:1;', 1736336274),
+('1b6453892473a467d07372d45eb05abc2031647a:timer', 'i:1736336274;', 1736336274),
+('902ba3cda1883801594b6e1b452790cc53948fda', 'i:1;', 1734534993),
+('902ba3cda1883801594b6e1b452790cc53948fda:timer', 'i:1734534993;', 1734534993),
+('ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4', 'i:2;', 1734576869),
+('ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4:timer', 'i:1734576869;', 1734576869),
+('fe5dbbcea5ce7e2988b8c69bcfdfde8904aabc1f', 'i:1;', 1734537558),
+('fe5dbbcea5ce7e2988b8c69bcfdfde8904aabc1f:timer', 'i:1734537558;', 1734537558),
+('ginocarlorabina@gmail.com|127.0.0.1', 'i:2;', 1734576600),
+('ginocarlorabina@gmail.com|127.0.0.1:timer', 'i:1734576600;', 1734576600),
+('samuel@mail.com|127.0.0.1', 'i:1;', 1734347107),
+('samuel@mail.com|127.0.0.1:timer', 'i:1734347107;', 1734347107),
+('test2@mail.com|127.0.0.1', 'i:1;', 1728479313),
+('test2@mail.com|127.0.0.1:timer', 'i:1728479313;', 1728479313),
+('user1234@mail.com|127.0.0.1', 'i:1;', 1734399680),
+('user1234@mail.com|127.0.0.1:timer', 'i:1734399680;', 1734399680),
+('user2@example.com|127.0.0.1', 'i:1;', 1734347219),
+('user2@example.com|127.0.0.1:timer', 'i:1734347219;', 1734347219);
 
 -- --------------------------------------------------------
 
@@ -214,6 +250,13 @@ CREATE TABLE `password_reset_tokens` (
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `password_reset_tokens`
+--
+
+INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
+('darkangelgino@gmail.com', '$2y$12$3bgFFKZaPOBabTYCqv6jReMncig75/pI8GGWaama4Zmyo./UtX21q', '2024-12-18 18:50:03');
+
 -- --------------------------------------------------------
 
 --
@@ -226,19 +269,10 @@ CREATE TABLE `reservations` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `reservation_date` varchar(225) DEFAULT NULL,
   `reservation_time` varchar(225) DEFAULT NULL,
-  `number_of_people` int(11) NOT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','approved','rejected','lapsed/finished') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `reservations`
---
-
-INSERT INTO `reservations` (`id`, `event_id`, `user_id`, `reservation_date`, `reservation_time`, `number_of_people`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 2, '2024-09-26', '15:15', 25, 'pending', '2024-09-21 01:16:24', '2024-09-21 01:16:24'),
-(2, 3, 2, '2024-09-26', '15:15', 25, 'pending', '2024-09-21 01:17:10', '2024-09-21 01:17:10');
 
 -- --------------------------------------------------------
 
@@ -304,10 +338,10 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('93YfQCcgLWCP314ItGvkmBcjAqdI8dUKr4vhh4Tz', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiMUNZSHhUcUgzOEZLVGRia3M2NlN5QUd1YXlENVZRNmlVYlpOZWQ0cyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1726912715),
-('cnX1rUqQrFHztWtOrRpkrRSe5gVKCqkqSEeG6Riq', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieVBjVXdoRzZRNXh5SHZBUjBaUDNQemppVlk5b0Z5Tm1DY0ZLdEs0MSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2Jvb2tyZXNlcnZhdGlvbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1726911201),
-('krVaaDJoLEWrRAcVxJCAk8s7NqcglryZos1GtjRp', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTExza01kR2o4c243MG1RMW1tRHBncUhRTFBTVDZ0YnpHSXNtSW9TcCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2Jvb2tyZXNlcnZhdGlvbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==', 1726911069),
-('YgDjzV5RxgBofIA9dwAmUHqlIaGOAFTnFRlwXlrr', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWVpCUGF3dG5lcGFZRVdWalhBWjB3R3NwdE1TZHVMRXZaSFBaeHRMOSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1727069711);
+('kw0gHcMuB8jQASFSEm1USQezWWXMIpgDZVNLa3FO', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoianpOQnNQMzdXZXMzT3dyUTRGZko3VERKRkViczJ1cTdZZ3FRRTlSUCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO3M6MzoidXJsIjthOjE6e3M6ODoiaW50ZW5kZWQiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO319', 1736574455),
+('LANfybQjGClK50nLSzcBJC0CTlFviA0G6lgFeM56', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoicUJla3VjU05EWllnVWtnSDF4cVlMQm94YUpVWTFMekwzTzBPNGtZWCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC92ZXJpZnktZW1haWwiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo0O3M6MzoidXJsIjthOjE6e3M6ODoiaW50ZW5kZWQiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO319', 1736336053),
+('LsranYcKB5U0cih0YycRkTvD69VKxCDYuItEHuGl', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQmRIZ29Qcm42b1UyNUwxU2hoS0c1ZjNUV3REdlpxQndDc0d4RHlXbCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1736574448),
+('NDineCZ9msn9rGxM8aZy4yoimN1JoFVJyuNgPH68', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiWFlhQ1BmVVllZ0t3VFRRQmJoU3J5ZXg1OEIydFA1NFM0N2p6eGJQRCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQyOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkP3ZlcmlmaWVkPTEiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo0O30=', 1736336218);
 
 -- --------------------------------------------------------
 
@@ -331,9 +365,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin User', 'churchadmin@gmail.com', '2024-09-16 19:21:13', '$2y$12$l341EVII7vfPG/NIXLlYnO37lDObzas4Sr3n4lR2skVRuEt3geqWy', NULL, '2024-09-16 19:21:13', '2024-09-16 19:21:13'),
-(2, 'Test User', 'user@example.com', '2024-09-16 19:21:13', '$2y$12$IBO5TIP9oqC6nU0y0ernJ.seNWVxnlIv126/wn9vHgRNzJ6MmJqfK', NULL, '2024-09-16 19:21:13', '2024-09-16 19:21:13'),
-(3, 'test', 'test@mail.com', NULL, '$2y$12$hvy5O2fQ8Bar8PCkoWgAVuDxNmh9xyNWu7zIQVNLOePy07OQgSVPm', NULL, '2024-09-16 19:26:11', '2024-09-16 19:26:11');
+(1, 'Admin User', 'churchadmin@gmail.com', '2025-01-10 21:46:03', '$2y$12$5VeLjulD0ZvWZeUSAy..c.2aAJPZhx3rjqn5/AmUNw985MBeBCK1y', NULL, '2025-01-10 21:46:03', '2025-01-10 21:46:03'),
+(2, 'Test User 1', 'user@example.com', '2025-01-10 21:46:03', '$2y$12$/a.EB6rBjKiIp4aTrBFUe.6NDPYanHolUVNJrJJaGWHybwkMU9iHi', NULL, '2025-01-10 21:46:03', '2025-01-10 21:46:03'),
+(3, 'Test User 2', 'user2@example.com', '2025-01-10 21:46:04', '$2y$12$Mh.nniQnJ6zqNPBMygcBOO5cPZ8ucTxfmmtaOFX3R/UASqfcHxhO.', NULL, '2025-01-10 21:46:04', '2025-01-10 21:46:04');
 
 -- --------------------------------------------------------
 
@@ -345,21 +379,35 @@ CREATE TABLE `wedding_details` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` varchar(255) DEFAULT NULL,
   `event_id` varchar(225) DEFAULT NULL,
+  `reservation_id` varchar(225) DEFAULT NULL,
   `groom_name` varchar(225) DEFAULT NULL,
+  `groom_birth_date` varchar(225) DEFAULT NULL,
+  `groom_age` varchar(225) DEFAULT NULL,
+  `groom_birth_place` varchar(255) DEFAULT NULL,
+  `groom_address` varchar(255) DEFAULT NULL,
+  `groom_father_name` varchar(255) DEFAULT NULL,
+  `groom_mother_name` varchar(255) DEFAULT NULL,
+  `groom_religion` varchar(100) DEFAULT NULL,
+  `groom_job` varchar(100) DEFAULT NULL,
   `bride_name` varchar(255) DEFAULT NULL,
+  `bride_birth_date` varchar(225) DEFAULT NULL,
+  `bride_age` varchar(225) DEFAULT NULL,
+  `bride_birth_place` varchar(255) DEFAULT NULL,
+  `bride_address` varchar(255) DEFAULT NULL,
+  `bride_father_name` varchar(255) DEFAULT NULL,
+  `bride_mother_name` varchar(255) DEFAULT NULL,
+  `bride_religion` varchar(100) DEFAULT NULL,
+  `bride_job` varchar(100) DEFAULT NULL,
   `marriage_file` varchar(255) DEFAULT NULL,
   `wedding_participants` int(11) DEFAULT NULL,
   `wedding_notes` text DEFAULT NULL,
+  `sponsor_ninong1` varchar(255) DEFAULT NULL,
+  `sponsor_ninang1` varchar(255) DEFAULT NULL,
+  `sponsor_ninong2` varchar(255) DEFAULT NULL,
+  `sponsor_ninang2` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `wedding_details`
---
-
-INSERT INTO `wedding_details` (`id`, `user_id`, `event_id`, `groom_name`, `bride_name`, `marriage_file`, `wedding_participants`, `wedding_notes`, `created_at`, `updated_at`) VALUES
-(1, '2', '2', 'test', 'test', 'uploads/q5BKqM8igyWFQzNp9AaDfSt1G3ISebcxz0QT2fid.doc', 25, 'asdfadf', '2024-09-21 01:16:24', '2024-09-21 01:16:24');
 
 --
 -- Indexes for dumped tables
@@ -478,7 +526,7 @@ ALTER TABLE `wedding_details`
 -- AUTO_INCREMENT for table `baptism_details`
 --
 ALTER TABLE `baptism_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `burial_details`
@@ -514,7 +562,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -532,7 +580,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wedding_details`
 --
 ALTER TABLE `wedding_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
