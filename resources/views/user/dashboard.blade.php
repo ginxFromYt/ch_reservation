@@ -27,6 +27,7 @@
         $canNavigateBack = !$month->eq(Carbon::now()->startOfMonth());
 
         $reservations = DB::table('reservations')
+            ->join('events', 'events.id', 'reservations.event_id')
             ->where('status', 'approved')
             ->get()
             ->groupBy(function ($date) {
@@ -39,7 +40,8 @@
             <h1 class="text-2xl sm:text-4xl font-bold text-gray-800">Event Calendar</h1>
             <p class="text-gray-700 text-sm leading-relaxed">
                 <span class="font-semibold text-red-500">Red</span> - Fully booked,
-                <span class="font-semibold text-green-500">Green</span> - Has reservations with Available slots.
+                <span class="font-semibold text-green-500">Green</span> - Has reservations with available slots,
+                <span class="font-semibold text-gray-500">Gray</span> - No reservations.
             </p>
         </div>
 
@@ -96,23 +98,35 @@
                             @for ($j = 0; $j < 7; $j++)
                                 @php
                                     $currentDate = $month->copy()->day($day)->format('Y-m-d');
+                                    $currentReservations = $reservations[$currentDate] ?? collect();
+                                    $bgColor = 'bg-gray-200'; // Default: No reservation
+
+                                    foreach ($currentReservations as $reservation) {
+                                        if ($reservation->name === 'Wedding Ceremony' && $currentReservations->count() > 1) {
+                                            $bgColor = 'bg-red-300'; // Red for multiple weddings
+                                        } elseif ($reservation->name === 'Wedding Ceremony') {
+                                            $bgColor = 'bg-green-200'; // Green for one wedding
+                                        } elseif ($reservation->name === 'Burial Mass' && $currentReservations->count() >= 6) {
+                                            $bgColor = 'bg-red-300'; // Red for 6 or more burials
+                                        } elseif ($reservation->name === 'Burial Mass') {
+                                            $bgColor = 'bg-green-200'; // Green for less than 6 burials
+                                        } elseif ($reservation->name === 'Baptism') {
+                                            $bgColor = 'bg-green-200'; // Green for baptism
+                                        }
+                                    }
                                 @endphp
 
                                 @if (($i === 0 && $j < $startOfMonth) || $day > $daysInMonth)
                                     <td class="border border-gray-300 px-2 py-3 text-center"></td>
                                 @else
-                                    @php
-                                        $hasReservation = isset($reservations[$currentDate]);
-                                    @endphp
-
-                                    <td class="border border-gray-300 px-2 py-3 text-center {{ $hasReservation ? 'bg-green-200' : '' }}"
-                                        @if ($hasReservation) title="Has reservations on {{ $currentDate }}" @endif>
+                                    <td class="border border-gray-300 px-2 py-3 text-center {{ $bgColor }}"
+                                        @if ($currentReservations->isNotEmpty()) title="Reservations: {{ $currentReservations->count() }} on {{ $currentDate}}, Event: {{$reservation->name}}" @endif>
                                         @if (
                                             $month->copy()->day($day)->lt($today) ||
                                                 $month->copy()->day($day)->isSunday() ||
                                                 $month->copy()->day($day)->isMonday())
                                             <button class="cursor-not-allowed text-xs sm:text-sm"
-                                                title="This date is reserved or disabled">
+                                                >
                                                 {{ $day }}
                                             </button>
                                         @else
