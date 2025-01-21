@@ -49,6 +49,8 @@ class UserController extends Controller
 
     public function proceedReservation(Request $request)
     {
+        // dd($request->reservation_date, $request->reservation_time);
+
         // Check if the user already has a reservation for the selected event
         $reservationExists = Reservations::where('user_id', Auth::id())
             ->where('event_id', $request->event_id)
@@ -58,19 +60,9 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'You already have a reservation for this event.');
         }
 
-        // Check if there is an existing reservation with the same date and time where the status is approved
-        $conflictingReservation = Reservations::where('reservation_date', $request->reservation_date)
-            ->where('reservation_time', $request->reservation_time)
-            ->where('status', 'approved')
-            ->exists();
-
-        if ($conflictingReservation) {
-            return redirect()->back()->with('error', 'There is already an approved reservation for the selected date and time.');
-        }
-
         // Handle event-specific logic
-        if ($request->event_id == 2) { // Event id 2 is wedding
-            // Rules: 1 AM and 1 PM per day (max 2 reservations)
+        if ($request->event_id == 2) { // Wedding
+            // Rules: 1 AM and 1 PM per day
             $weddingCountAM = Reservations::where('event_id', 2)
                 ->where('reservation_date', $request->reservation_date)
                 ->where('reservation_time', '9:30 AM')
@@ -83,7 +75,7 @@ class UserController extends Controller
 
             if (
                 ($request->reservation_time == '9:30 AM' && $weddingCountAM >= 1) ||
-                ($request->reservation_time == '2:00 OM' && $weddingCountPM >= 1)
+                ($request->reservation_time == '2:00 PM' && $weddingCountPM >= 1)
             ) {
                 return redirect()->back()->with('error', 'The wedding reservation limit for this time slot has been reached.');
             }
@@ -122,23 +114,22 @@ class UserController extends Controller
                 'marriage_file' => $filePath,
             ]);
 
-            if ($weddingDetail) {
-                $reservation = Reservations::create([
-                    'user_id' => Auth::id(),
-                    'event_id' => $request->event_id,
-                    'reservation_date' => $request->reservation_date,
-                    'reservation_time' => $request->reservation_time,
-                    'status' => 'pending',
-                ]);
-                $weddingDetail->update(['reservation_id' => $reservation->id]);
-            }
+            $reservation = Reservations::create([
+                'user_id' => Auth::id(),
+                'event_id' => $request->event_id,
+                'reservation_date' => $request->reservation_date,
+                'reservation_time' => $request->reservation_time,
+                'status' => 'pending',
+            ]);
+
+            $weddingDetail->update(['reservation_id' => $reservation->id]);
 
             return redirect()->back()->with('success', 'Wedding reservation created successfully!');
-        } else if ($request->event_id == 5) { // Event id 5 is burial
-            // Rules: Max 3 AM (8:00) and 3 PM (14:00)
+        } else if ($request->event_id == 5) { // Burial
+            // Rules: Max 3 AM and 3 PM
             $burialCountAM = Reservations::where('event_id', 5)
                 ->where('reservation_date', $request->reservation_date)
-                ->where('reservation_time', '08:00 AM')
+                ->where('reservation_time', '8:00 AM') // Adjusted to match the database format
                 ->count();
 
             $burialCountPM = Reservations::where('event_id', 5)
@@ -146,17 +137,18 @@ class UserController extends Controller
                 ->where('reservation_time', '2:00 PM')
                 ->count();
 
+
+            // dd($burialCountAM);
+
             if (
-                ($request->reservation_time == '08:00 AM' && $burialCountAM >= 3) ||
+                ($request->reservation_time == '8:00 AM' && $burialCountAM >= 3) ||
                 ($request->reservation_time == '2:00 PM' && $burialCountPM >= 3)
             ) {
-                return redirect()->back()->with('error', 'The burial reservation limit for this time slot has been reached.');
+                // dd($burialCountAM, $burialCountPM);
+                return redirect()->back()->with('error', 'The burial reservation limit for this time slot has been reached. There are already ' . $burialCountAM . ' reservations for 8:00 AM and ' . $burialCountPM . ' reservations for 2:00 PM that are still pending as of today.');
             }
-
-            $certDeathPath = null;
-            if ($request->hasFile('cert_death') && $request->file('cert_death')->isValid()) {
-                $certDeathPath = $request->file('cert_death')->store('death_certs', 'public');
-            }
+            // dd($burialCountAM, $burialCountPM);
+            $certDeathPath = $request->hasFile('cert_death') ? $request->file('cert_death')->store('death_certs', 'public') : null;
 
             $burialDetail = BurialDetails::create([
                 'user_id' => Auth::id(),
@@ -177,30 +169,24 @@ class UserController extends Controller
                 'contact_number' => $request->contact_number,
             ]);
 
-            if ($burialDetail) {
-                $reservation = Reservations::create([
-                    'user_id' => Auth::id(),
-                    'event_id' => $request->event_id,
-                    'reservation_date' => $request->reservation_date,
-                    'reservation_time' => $request->reservation_time,
-                    'status' => 'pending',
-                ]);
-                $burialDetail->update(['reservation_id' => $reservation->id]);
-            }
+            $reservation = Reservations::create([
+                'user_id' => Auth::id(),
+                'event_id' => $request->event_id,
+                'reservation_date' => $request->reservation_date,
+                'reservation_time' => $request->reservation_time,
+                'status' => 'pending',
+            ]);
+
+            $burialDetail->update(['reservation_id' => $reservation->id]);
 
             return redirect()->back()->with('success', 'Burial reservation created successfully!');
-        } else if ($request->event_id == 3) { // Event id 3 is baptism
-            $birthcertPath = null;
-
-            // Handle file upload for birth certificate
-            if ($request->hasFile('child_birthcert') && $request->file('child_birthcert')->isValid()) {
-                $birthcertPath = $request->file('child_birthcert')->store('child_birthcerts', 'public');
-            }
+        } else if ($request->event_id == 3) { // Baptism
+            // Unlimited reservations per day
+            $birthcertPath = $request->hasFile('child_birthcert') ? $request->file('child_birthcert')->store('child_birthcerts', 'public') : null;
 
             $baptismDetail = BaptismDetail::create([
                 'user_id' => Auth::id(),
                 'event_id' => $request->event_id,
-                //add reservation reservation_id
                 'child_name' => $request->child_name,
                 'child_bday' => $request->child_birthday,
                 'child_birthcert' => $birthcertPath,
@@ -219,24 +205,22 @@ class UserController extends Controller
                 'sponsor_male' => $request->sponsor_male,
             ]);
 
-            if ($baptismDetail) {
-                $reservation = Reservations::create([
-                    'user_id' => Auth::id(),
-                    'event_id' => $request->event_id,
-                    'reservation_date' => $request->reservation_date,
-                    'reservation_time' => $request->reservation_time,
+            $reservation = Reservations::create([
+                'user_id' => Auth::id(),
+                'event_id' => $request->event_id,
+                'reservation_date' => $request->reservation_date,
+                'reservation_time' => $request->reservation_time,
+                'status' => 'pending',
+            ]);
 
-                    // 'number_of_people' => $request->number_of_people,
-                    'status' => 'pending',
-                ]);
-
-                $baptismDetail->update(['reservation_id' => $reservation->id]);
-            }
+            $baptismDetail->update(['reservation_id' => $reservation->id]);
 
             return redirect()->back()->with('success', 'Baptism reservation created successfully!');
         }
 
+        return redirect()->back()->with('error', 'Invalid event type.');
     }
+
 
     public function fetch()
     {

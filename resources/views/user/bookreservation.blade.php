@@ -666,13 +666,27 @@
                         break;
                 }
 
-                // Remove reserved times for the selected date
                 if (dateInput) {
-                    availableTimes = availableTimes.filter(time => {
-                        return !reservedDatesTime.some(reserved =>
-                            reserved.date === dateInput && reserved.time === time
-                        );
-                    });
+                    // Modify logic for burial events
+                    if (selectedEvent === "Burial Mass") {
+                        availableTimes = availableTimes.filter(time => {
+                            const reservations = reservedDatesTime.filter(reserved =>
+                                reserved.date === dateInput && reserved.time === time
+                            );
+                            if (reservations.length > 0) {
+                                const currentCount = reservations[0].count;
+                                return currentCount < 3; // Allow if the current count is less than 3
+                            }
+                            return true; // Time is available if no reservations exist for it
+                        });
+                    } else {
+                        // General rule for other events: remove reserved times for the selected date
+                        availableTimes = availableTimes.filter(time => {
+                            return !reservedDatesTime.some(reserved =>
+                                reserved.date === dateInput && reserved.time === time
+                            );
+                        });
+                    }
                 }
 
                 if (availableTimes.length > 0) {
@@ -691,6 +705,7 @@
                     timeSelect.appendChild(defaultOption);
                 }
             }
+
 
             // Toggle forms visibility based on the selected event
             function toggleForms() {
